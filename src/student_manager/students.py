@@ -20,10 +20,20 @@ def get_students():
 
 def add_student(first_name, last_name, email, class_name):
     """
-    À compléter : Ajoute un nouvel étudiant dans la base de données.
+    Ajoute un nouvel étudiant dans la base de données.
     """
+    connection = get_connection()
 
-    pass
+    connection.execute(
+        """
+        INSERT INTO students (first_name, last_name, email, class_name)
+        VALUES (?, ?, ?, ?)
+        """,
+        (first_name, last_name, email, class_name)
+    )
+
+    connection.commit()
+    connection.close()
 
 
 def delete_student(student_id):
