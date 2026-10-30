@@ -2,20 +2,20 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from .database import init_database
-from .students import (
+from database import init_database
+from students import (
     get_students,
     add_student,
     delete_student,
     search_students,
 )
-from .subjects import get_subjects
-from .grades import (
+from subjects import get_subjects
+from grades import (
     add_grade,
     get_grades_by_student,
     get_student_average,
 )
-from .statistics import (
+from statistics import (
     get_student_count,
     get_general_average,
     get_class_average,
