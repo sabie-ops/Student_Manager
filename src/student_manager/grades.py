@@ -18,11 +18,25 @@ def add_grade(student_id, subject_id, grade):
 
 
 def get_grades_by_student(student_id):
-    """
-    À compléter : Retourne les notes d'un étudiant avec le nom de la matière.
-    """
+        """
+        Retourne les notes d'un étudiant avec le nom de la matière.
+        """
+        connection = get_connection()
 
-    pass
+        cursor = connection.execute(
+            """
+            SELECT subjects.name, grades.grade
+            FROM grades
+            JOIN subjects ON grades.subject_id = subjects.id
+            WHERE grades.student_id = ?
+            """,
+            (student_id,)
+        )
+
+        results = cursor.fetchall()
+        connection.close()
+
+        return results
 
 
 def get_student_average(student_id):
