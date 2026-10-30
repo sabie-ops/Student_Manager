@@ -1,0 +1,4 @@
+
+.idea_backup/
+__pycache__/
+*.db
