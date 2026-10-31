@@ -1,6 +1,7 @@
 [project]
 name = "student-manager"
 version = "0.1.0"
+<<<<<<< Updated upstream
 description = "Application de gestion des étudiants, des matières et des notes"
 authors = [
     {name = "Sabie Mélanie NITEKA",email = "sabie.niteka@efrei.net"},
@@ -22,3 +23,7 @@ build-backend = "poetry.core.masonry.api"
 dev = [
     "pytest (>=9.1.1,<10.0.0)"
 ]
+=======
+requires-python = ">=3.13"
+dependencies = ["requests (>=2.34.2,<3.0.0)"]
+>>>>>>> Stashed changes
