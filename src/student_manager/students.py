@@ -40,12 +40,18 @@ def delete_student(student_id):
     """
     À compléter : Supprime un étudiant.
     """
-    with get_connection() as connection :
-        connection.execute(
-            (student_id)
-        )
+    connection = get_connection()
 
-    pass
+    connection.execute(
+        """
+        DELETE FROM students
+        WHERE id = ?
+        """,
+        (student_id,)
+    )
+
+    connection.commit()
+    connection.close()
 
 
 def search_students(name):
@@ -59,5 +65,3 @@ def search_students(name):
             (pattern, pattern)
         )
         return cursor.fetchall()
-
-    pass

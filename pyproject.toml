@@ -1,19 +1,24 @@
 [project]
 name = "student-manager"
 version = "0.1.0"
-<<<<<<< Updated upstream
 description = "Application de gestion des étudiants, des matières et des notes"
+
 authors = [
-    {name = "Sabie Mélanie NITEKA",email = "sabie.niteka@efrei.net"},
-    {name = "Celeste Oudjane", email = "celeste.oudjane@efrei.net"}
+    { name = "Sabie Mélanie NITEKA", email = "sabie.niteka@efrei.net" },
+    { name = "Celeste Oudjane", email = "celeste.oudjane@efrei.net" }
 ]
+
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
+
 dependencies = [
+    "requests>=2.34.2,<3.0.0"
 ]
 
 [tool.poetry]
-packages = [{include = "student_manager", from = "src"}]
+packages = [
+    { include = "student_manager", from = "src" }
+]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -21,9 +26,5 @@ build-backend = "poetry.core.masonry.api"
 
 [dependency-groups]
 dev = [
-    "pytest (>=9.1.1,<10.0.0)"
+    "pytest>=9.1.1,<10.0.0"
 ]
-=======
-requires-python = ">=3.13"
-dependencies = ["requests (>=2.34.2,<3.0.0)"]
->>>>>>> Stashed changes
