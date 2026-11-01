@@ -1,5 +1,5 @@
-from student_manager.database import init_database
-from student_manager.ui import create_main_window
+from database import init_database
+from ui import create_main_window
 
 
 def main():
