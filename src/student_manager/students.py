@@ -38,7 +38,7 @@ def add_student(first_name, last_name, email, class_name):
 
 def delete_student(student_id):
     """
-    À compléter : Supprime un étudiant.
+    Supprime un étudiant.
     """
     connection = get_connection()
 
@@ -56,7 +56,7 @@ def delete_student(student_id):
 
 def search_students(name):
     """
-    À compléter : Recherche un étudiant par son nom ou son prénom.
+    Recherche un étudiant par son nom ou son prénom.
     """
     pattern = f"%{name}%"
 

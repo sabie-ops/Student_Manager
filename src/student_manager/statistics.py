@@ -6,7 +6,11 @@ def get_student_count():
     À compléter : Retourne le nombre total d'étudiants.
     """
 
-    pass
+    with get_connection() as connection:
+        cursor = connection.execute()
+        result = cursor.fetchone()
+
+        return result[0] if result[0] is not None else 0
 
 
 def get_general_average():
