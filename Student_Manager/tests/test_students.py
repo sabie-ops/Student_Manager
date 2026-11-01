@@ -48,7 +48,10 @@ def test_add_student(setup_database):
 
 
 def test_get_students(setup_database):
-    # À compléter :  vérifier la récupération de la liste des étudiants.
+   list_students = []
+   students = get_students()                                                                                                                         
+   
+
 
 
 def test_delete_student(setup_database):
