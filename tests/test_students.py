@@ -1,7 +1,7 @@
 import pytest
 
-from student_manager.database import get_connection
-from student_manager.students import (
+from database import get_connection
+from students import (
     get_students,
     add_student,
     delete_student,
@@ -46,23 +46,52 @@ def test_add_student(setup_database):
 
     assert student_id == 1
 
-
 def test_get_students(setup_database):
-    ""
-    # À compléter :  vérifier la récupération de la liste des étudiants.
-    ""
+   add_student("Maxine", "Mayfield", "maxine@example.com", "L1")
+   add_student("Lucas", "Sinclair", "lucas@example.com", "L2")
+
+   students = get_students()
+   assert len(students) == 2
+   assert students[0][1] == "Maxine" 
+   assert students[0][2] == "Mayfield"
+   assert students[1][1] == "Lucas"
+   assert students[1][2] == "Sinclair"                                                                                                                 
+   
 
 def test_delete_student(setup_database):
-    ""
-    # À compléter : vérifier la suppression d’un étudiant.
-    ""
+    # vérifier la suppression d’un étudiant.
+    mike_id = add_student("Mike", "Wheeler", "mike@example.com", "L1")
+    add_student("Dustin", "Henderson", "dustin@example.com", "L1")
+
+    delete_student(mike_id)
+
+    students = get_students()
+    assert len(students) == 1
+    assert students[0][1] == "Dustin"
+    assert students[0][2] == "Henderson"
+
 
 def test_search_students(setup_database):
-    ""
-    # À compléter : vérifier la recherche d’étudiants à partir d’un nom ou d'un prénom.
-    ""
+    # vérifier la recherche d’étudiants à partir d’un nom ou d'un prénom.
+    add_student("Mike", "Wheeler", "mike@example.com", "L1")
+    add_student("Dustin", "Henderson", "dustin@example.com", "L1")
+    add_student("Will", "Byers", "will@example.com", "L2")
+
+    # Recherche par nom
+    results = search_students("Wheeler")
+    assert len(results) == 1
+    assert results[0][1] == "Mike"
+
+    # Recherche par prénom
+    results = search_students("Dustin")
+    assert len(results) == 1
+    assert results[0][2] == "Henderson"
 
 def test_search_students_no_result(setup_database):
-    ""
-    # À compléter : vérifier le comportement de la recherche lorsq’aucun étudiant ne correspond au critère indiqué.
-    ""
+    # vérifier le comportement de la recherche lorsqu’aucun étudiant ne correspond au critère indiqué.
+    add_student("Mike", "Wheeler", "mike@example.com", "L1")
+    add_student("Eleven", "Hopper", "eleven@example.com", "L1")
+
+    results = search_students("Vecna")
+
+    assert results == []
