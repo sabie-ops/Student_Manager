@@ -1,73 +1,108 @@
-import sqlite3
-
 import pytest
 
-from student_manager import statistics
+from student_manager.statistics import (
+    get_student_count,
+    get_general_average,
+    get_class_average,
+)
 
 
-@pytest.fixture
-def db(monkeypatch):
-    """Crée une base vide en mémoire et la substitue à la vraie base."""
-    connection = sqlite3.connect(":memory:")
-
-    connection.execute(
+def insert_student(db, class_name="L2"):
+    """Ajoute un étudiant dans la base de test et retourne son id."""
+    cursor = db.execute(
         """
-        CREATE TABLE students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            first_name TEXT,
-            last_name TEXT,
-            email TEXT,
-            class_name TEXT
-        )
-        """
+        INSERT INTO students (first_name, last_name, email, class_name)
+        VALUES ('Prenom', 'Nom', 'mail@test.com', ?)
+        """,
+        (class_name,)
     )
-    connection.execute(
-        """
-        CREATE TABLE grades (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            student_id INTEGER,
-            grade REAL
-        )
-        """
+    return cursor.lastrowid
+
+
+def insert_grade(db, student_id, grade):
+    """Ajoute une note dans la base de test."""
+    db.execute(
+        "INSERT INTO grades (student_id, grade) VALUES (?, ?)",
+        (student_id, grade)
     )
-
-    # statistics.py utilisera cette connexion au lieu de la vraie base
-    monkeypatch.setattr(statistics, "get_connection", lambda: connection)
-
-    yield connection
-    connection.close()
 
 
 def test_get_student_count_empty(db):
-    assert statistics.get_student_count() == 0
+    # Arrange : base vide (fournie par la fixture db)
+
+    # Act
+    resultat = get_student_count()
+
+    # Assert
+    assert resultat == 0
 
 
-def test_get_student_count(db):
-    db.execute("INSERT INTO students (first_name, last_name, email, class_name) VALUES ('Marie', 'Dupont', 'm@mail.com', 'L2')")
-    db.execute("INSERT INTO students (first_name, last_name, email, class_name) VALUES ('Paul', 'Martin', 'p@mail.com', 'L2')")
+@pytest.mark.parametrize("nombre", [1, 3, 5])
+def test_get_student_count(db, nombre):
+    # Arrange
+    for _ in range(nombre):
+        insert_student(db)
 
-    assert statistics.get_student_count() == 2
+    # Act
+    resultat = get_student_count()
+
+    # Assert
+    assert resultat == nombre
 
 
 def test_get_general_average_without_grades(db):
-    assert statistics.get_general_average() == 0
+    # Arrange : aucune note dans la base
+
+    # Act
+    resultat = get_general_average()
+
+    # Assert
+    assert resultat == 0
 
 
-def test_get_general_average(db):
-    db.execute("INSERT INTO grades (student_id, grade) VALUES (1, 10)")
-    db.execute("INSERT INTO grades (student_id, grade) VALUES (1, 20)")
+@pytest.mark.parametrize(
+    "notes, attendu",
+    [
+        ([12], 12),
+        ([10, 20], 15),
+        ([0, 20], 10),
+    ]
+)
+def test_get_general_average(db, notes, attendu):
+    # Arrange
+    student_id = insert_student(db)
+    for note in notes:
+        insert_grade(db, student_id, note)
 
-    assert statistics.get_general_average() == 15
+    # Act
+    resultat = get_general_average()
+
+    # Assert
+    assert resultat == attendu
 
 
 def test_get_class_average(db):
-    db.execute("INSERT INTO students (first_name, last_name, email, class_name) VALUES ('Marie', 'Dupont', 'm@mail.com', 'L2')")
-    db.execute("INSERT INTO students (first_name, last_name, email, class_name) VALUES ('Paul', 'Martin', 'p@mail.com', 'L3')")
-    db.execute("INSERT INTO grades (student_id, grade) VALUES (1, 12)")  # Marie, L2
-    db.execute("INSERT INTO grades (student_id, grade) VALUES (1, 16)")  # Marie, L2
-    db.execute("INSERT INTO grades (student_id, grade) VALUES (2, 4)")   # Paul, L3
+    # Arrange
+    marie = insert_student(db, "L2")
+    paul = insert_student(db, "L3")
+    insert_grade(db, marie, 12)
+    insert_grade(db, marie, 16)
+    insert_grade(db, paul, 4)
 
-    assert statistics.get_class_average("L2") == 14
+    # Act
+    resultat = get_class_average("L2")
+
+    # Assert
+    assert resultat == 14
 
 
+def test_get_class_average_unknown_class(db):
+    # Arrange
+    student_id = insert_student(db, "L2")
+    insert_grade(db, student_id, 15)
 
+    # Act
+    resultat = get_class_average("M1")
+
+    # Assert
+    assert resultat == 0
