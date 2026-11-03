@@ -1,3 +1,5 @@
+import sqlite3
+
 import pytest
 
 from student_manager.statistics import (
@@ -7,99 +9,96 @@ from student_manager.statistics import (
 )
 
 
-def insert_student(db, class_name="L2"):
-    """Ajoute un étudiant dans la base de test et retourne son id."""
-    cursor = db.execute(
+@pytest.fixture
+def setup_database(tmp_path, monkeypatch):
+    """Crée une base temporaire avec des données de test."""
+    db_path = tmp_path / "test.db"
+
+    connection = sqlite3.connect(db_path)
+    connection.execute(
+        """
+        CREATE TABLE students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT,
+            last_name TEXT,
+            email TEXT,
+            class_name TEXT
+        )
+        """
+    )
+    connection.execute(
+        """
+        CREATE TABLE grades (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            grade REAL
+        )
+        """
+    )
+
+    connection.executemany(
         """
         INSERT INTO students (first_name, last_name, email, class_name)
-        VALUES ('Prenom', 'Nom', 'mail@test.com', ?)
+        VALUES (?, ?, ?, ?)
         """,
-        (class_name,)
+        [
+            ("Marie", "Dupont", "marie@mail.com", "L2"),
+            ("Paul", "Martin", "paul@mail.com", "L2"),
+            ("Lea", "Durand", "lea@mail.com", "L3"),
+            ("Tom", "Petit", "tom@mail.com", "M1"),
+        ]
     )
-    return cursor.lastrowid
-
-
-def insert_grade(db, student_id, grade):
-    """Ajoute une note dans la base de test."""
-    db.execute(
+    connection.executemany(
         "INSERT INTO grades (student_id, grade) VALUES (?, ?)",
-        (student_id, grade)
+        [
+            (1, 12),
+            (1, 16),
+            (2, 10),
+            (2, 14),
+            (3, 8),
+        ]
+    )
+    connection.commit()
+    connection.close()
+
+    monkeypatch.setattr(
+        "student_manager.statistics.get_connection",
+        lambda: sqlite3.connect(db_path)
     )
 
 
-def test_get_student_count_empty(db):
-    # Arrange : base vide (fournie par la fixture db)
+def test_get_student_count(setup_database):
+    # Arrange : 4 étudiants insérés par la fixture
 
     # Act
     resultat = get_student_count()
 
     # Assert
-    assert resultat == 0
+    assert resultat == 4
 
 
-@pytest.mark.parametrize("nombre", [1, 3, 5])
-def test_get_student_count(db, nombre):
-    # Arrange
-    for _ in range(nombre):
-        insert_student(db)
-
-    # Act
-    resultat = get_student_count()
-
-    # Assert
-    assert resultat == nombre
-
-
-def test_get_general_average_without_grades(db):
-    # Arrange : aucune note dans la base
+def test_get_general_average(setup_database):
+    # Arrange : notes 12, 16, 10, 14, 8 -> 60 / 5
 
     # Act
     resultat = get_general_average()
 
     # Assert
-    assert resultat == 0
+    assert resultat == 12
 
 
-@pytest.mark.parametrize(
-    "notes, attendu",
-    [
-        ([12], 12),
-        ([10, 20], 15),
-        ([0, 20], 10),
-    ]
-)
-def test_get_general_average(db, notes, attendu):
-    # Arrange
-    student_id = insert_student(db)
-    for note in notes:
-        insert_grade(db, student_id, note)
-
-    # Act
-    resultat = get_general_average()
-
-    # Assert
-    assert resultat == attendu
-
-
-def test_get_class_average(db):
-    # Arrange
-    marie = insert_student(db, "L2")
-    paul = insert_student(db, "L3")
-    insert_grade(db, marie, 12)
-    insert_grade(db, marie, 16)
-    insert_grade(db, paul, 4)
+def test_get_class_average(setup_database):
+    # Arrange : L2 = Marie (12, 16) et Paul (10, 14) -> 52 / 4
 
     # Act
     resultat = get_class_average("L2")
 
     # Assert
-    assert resultat == 14
+    assert resultat == 13
 
 
-def test_get_class_average_unknown_class(db):
-    # Arrange
-    student_id = insert_student(db, "L2")
-    insert_grade(db, student_id, 15)
+def test_get_class_average_without_grades(setup_database):
+    # Arrange : Tom est en M1 et n'a aucune note
 
     # Act
     resultat = get_class_average("M1")

@@ -1,7 +1,9 @@
 import pytest
 
-from database import get_connection
-from students import (
+# ne peut pas trouver le fichier data donc block tout les fichier test, il faut bien cherché ou il est plassé
+from student_manager.database import get_connection
+from student_manager.students import (
+# aussi pour cette ligne
     get_students,
     add_student,
     delete_student,
