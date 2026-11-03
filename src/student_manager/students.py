@@ -68,7 +68,7 @@ def search_students(name):
             WHERE first_name LIKE ?
             OR last_name LIKE ?
             """,
-            (pattern, pattern)
+            (pattern, pattern),
         )
 
         return cursor.fetchall()
