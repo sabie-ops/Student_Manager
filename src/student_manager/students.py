@@ -60,8 +60,15 @@ def search_students(name):
     """
     pattern = f"%{name}%"
 
-    with get_connection() as connection :
+    with get_connection() as connection:
         cursor = connection.execute(
+            """
+            SELECT *
+            FROM students
+            WHERE first_name LIKE ?
+            OR last_name LIKE ?
+            """,
             (pattern, pattern)
         )
+
         return cursor.fetchall()
