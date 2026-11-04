@@ -68,40 +68,28 @@ def setup_database(tmp_path, monkeypatch):
 
 
 def test_get_student_count(setup_database):
-    # Arrange : 4 étudiants insérés par la fixture
 
-    # Act
     resultat = get_student_count()
 
-    # Assert
     assert resultat == 4
 
 
 def test_get_general_average(setup_database):
-    # Arrange : notes 12, 16, 10, 14, 8 -> 60 / 5
 
-    # Act
     resultat = get_general_average()
 
-    # Assert
     assert resultat == 12
 
 
 def test_get_class_average(setup_database):
-    # Arrange : L2 = Marie (12, 16) et Paul (10, 14) -> 52 / 4
 
-    # Act
     resultat = get_class_average("L2")
 
-    # Assert
     assert resultat == 13
 
 
 def test_get_class_average_without_grades(setup_database):
-    # Arrange : Tom est en M1 et n'a aucune note
 
-    # Act
     resultat = get_class_average("M1")
 
-    # Assert
     assert resultat == 0
