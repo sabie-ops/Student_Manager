@@ -85,6 +85,7 @@ tests/
 ## URL Testpypi
 
 - pip install -i https://test.pypi.org/simple/ student-manager-sac-11-26
+- https://test.pypi.org/project/student-manager-sac-11-26/ 
 
 ## Auteurs
 
