@@ -17,16 +17,6 @@ def setup_database(tmp_path, monkeypatch):
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
-    # Tables nécessaires
-    cursor.execute("""
-        CREATE TABLE students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            first_name TEXT,
-            last_name TEXT,
-            email TEXT,
-            class_name TEXT
-        )
-    """)
 
     cursor.execute("""
         CREATE TABLE subjects (
@@ -42,19 +32,6 @@ def setup_database(tmp_path, monkeypatch):
             subject_id INTEGER,
             grade REAL
         )
-    """)
-
-    # Données de test
-    cursor.execute("""
-        INSERT INTO students
-        (first_name, last_name, email, class_name)
-        VALUES ('John', 'Doe', 'john@test.com', 'INFO1')
-    """)
-
-    cursor.execute("""
-        INSERT INTO students
-        (first_name, last_name, email, class_name)
-        VALUES ('Jane', 'Smith', 'jane@test.com', 'INFO1')
     """)
 
     cursor.execute("""

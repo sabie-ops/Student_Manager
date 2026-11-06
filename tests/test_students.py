@@ -59,7 +59,7 @@ def test_get_students(setup_database):
 
    students = get_students()
    # liste a bien deux etudiant
-   assert len(students) == 2
+   # assert len(students) == 2
    # vérifie que le prénom du premier étudiant est maxine
    assert len(students) == 2
    assert students[0][1] == "Maxine"
@@ -89,7 +89,7 @@ def test_search_students(setup_database):
     add_student("Dustin", "Henderson", "dustin@example.com", "L1")
     add_student("Will", "Byers", "will@example.com", "L2")
 
-    # Recherche par prénom
+    # Recherche par nom
     results = search_students("Wheeler")
 
     assert len(results) == 1

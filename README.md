@@ -82,6 +82,9 @@ tests/
     ├── test_grades.py
     └── test_statistics.py
 ```
+## URL Testpypi
+
+- pip install -i https://test.pypi.org/simple/ student-manager-sac-11-26
 
 ## Auteurs
 
